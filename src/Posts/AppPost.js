@@ -22,7 +22,7 @@ export default class AppPost extends Component {
 
     componentDidMount() {
         axios
-            .get(process.env.REACT_APP_API_URL+'/api/post')
+            .get(process.env.REACT_APP_API_URL+'/api/auth/post', {'Authorization': "Bearer "+this.props.user.token}) 
             .then(response => {
                 this.setState({posts: response.data});
             })

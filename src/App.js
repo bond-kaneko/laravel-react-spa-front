@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
+import axios from 'axios';
 
 import AppPost from './Posts/AppPost.js';
 import AppUser from './Users/AppUser.js';
@@ -17,13 +18,20 @@ export default class App extends Component {
     }
 
     loginRequest() {
-        this.setState({user: {
-            user: {
-                email: 'test@example.com', 
-                name: 'user name', 
-                token: 'token'
-            }
-        }})
+        axios
+            .post(process.env.REACT_APP_API_URL+'/api/auth/login', {'email': 'test@example.com', 'name': "test-user", 'password': "password"}, {'Content-Type': "application/json"})
+            .then(response => {
+                this.setState({user: {
+                    user: {
+                        email: response['data']['user']['email'],
+                        name: response['data']['user']['name'], 
+                        token: response['data']['access_token']
+                    }
+                }})
+            })
+            .catch((response) => {
+                console.log('ログイン失敗')
+            })
     }
 
     logoutRequest() {
@@ -35,7 +43,7 @@ export default class App extends Component {
             <div>
                 {this.state.user === null 
                     ? <AppUser loginRequest={this.loginRequest}></AppUser>
-                    : <AppPost></AppPost>
+                    : <AppPost user={this.state.user} getPosts={this.getPosts}></AppPost>
                 }
                 <button onClick={this.logoutRequest}>ログアウト</button>
             </div>
